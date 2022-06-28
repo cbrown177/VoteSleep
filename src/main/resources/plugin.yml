@@ -1,0 +1,6 @@
+name: VoteSleep
+version: '${project.version}'
+main: me.kekf.votesleep.VoteSleep
+api-version: 1.18
+authors: [ kekf ]
+description: Lets you skip the night by voting!

@@ -1,0 +1,12 @@
+# Configuration for VoteSleep
+# Made by kekf
+
+Settings:
+  # The prefix that will be shown (if you do not want a prefix just leave this blank, this also determines the message color)
+  prefix: '&8[&eVoteSleep&8]&6 '
+  # What percentage of players need to be sleeping for it to skip night.
+  percent: 50
+  # Should ops be excluded from the vote?
+  exclude-ops: false
+  # The name of your world.
+  world-name: 'world'
