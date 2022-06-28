@@ -67,7 +67,6 @@ public class SleepListener implements Listener {
                 if (id.toString().split("-").length == 5) {
                     callbacks.remove(id);
                     if (!isDay() || Bukkit.getWorld(Objects.requireNonNull(plugin.getConfig().getString("Settings.world-name"))).isThundering()) {
-                        System.out.println(Bukkit.getWorld(Objects.requireNonNull(plugin.getConfig().getString("Settings.world-name"))).isThundering());
                         if (voteList.contains(e.getPlayer().getUniqueId())) {
                             unVote(e.getPlayer());
                         } else {
@@ -104,8 +103,6 @@ public class SleepListener implements Listener {
             // reset list
             voteList = new ArrayList<>();
         }
-
-        System.out.println(voteList);
     }
 
     private void unVote(Player player) {
