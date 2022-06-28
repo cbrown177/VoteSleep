@@ -95,7 +95,6 @@ public class SleepListener implements Listener {
         broadcastVoteMessage(player, getVotePercent());
 
         if (getVotePercent() >= requiredPercent) { // if enough players have voted
-            // This assumes your world name is 'world' this will also soon be configurable
             World world = Bukkit.getWorld(Objects.requireNonNull(plugin.getConfig().getString("Settings.world-name")));
             world.setTime(0);
             world.setStorm(false);
