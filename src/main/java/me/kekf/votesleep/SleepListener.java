@@ -91,7 +91,7 @@ public class SleepListener implements Listener {
     private void vote(Player player) {
         voteList.add(player.getUniqueId());
 
-        int requiredPercent = plugin.getConfig().getInt("Settings.percent"); // this will soon be configurable
+        int requiredPercent = plugin.getConfig().getInt("Settings.percent");
         broadcastVoteMessage(player, getVotePercent());
 
         if (getVotePercent() >= requiredPercent) { // if enough players have voted
@@ -147,7 +147,7 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " wants to sleep. " +
-                voteList.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) + // For now this is just 50% of players. I will add a config for this in the future
+                voteList.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }
@@ -156,7 +156,7 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " no longer wants to sleep. " +
-                voteList.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) + // For now this is just 50% of players. I will add a config for this in the future
+                voteList.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }
