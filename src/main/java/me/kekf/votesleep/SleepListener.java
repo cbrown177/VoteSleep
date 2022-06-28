@@ -10,9 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerBedLeaveEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -22,10 +20,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class SleepListener implements Listener {
-
-    // TODO: 6/28/2022
-    //  Add checks for entering different dimensions
-    //  Add checks for leaving the server
 
     private HashMap<UUID, Boolean> votes;
     private HashMap<UUID, Player> callbacks;
@@ -56,6 +50,22 @@ public class SleepListener implements Listener {
             } else {
                 unVote(e.getPlayer());
             }
+        }
+    }
+
+    @EventHandler
+    public void onPortalEnter(PlayerPortalEvent e) {
+        if (votes.containsKey(e.getPlayer().getUniqueId())) {
+            // for now it will go through the same process as normally leaving a bed or clicking a second time.
+            // This will probably change in the future. Same thing with the quit event.
+            unVote(e.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        if (votes.containsKey(e.getPlayer().getUniqueId())) {
+            unVote(e.getPlayer());
         }
     }
 
@@ -168,13 +178,13 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " no longer wants to sleep. " +
-                votes.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
+                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * (Bukkit.getOnlinePlayers().size() - getExclusionCount())) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }
 
     private void createClickEvent(TextComponent component, Player player) {
-        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.GREEN + "Click to change vote")));
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.GREEN + "Click to change your vote")));
 
         UUID callbackID = UUID.randomUUID();
         callbacks.put(callbackID, player);
