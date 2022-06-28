@@ -17,12 +17,15 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
 public class SleepListener implements Listener {
+
+    // TODO: 6/28/2022
+    //  Add checks for entering different dimensions
+    //  Add checks for leaving the server
 
     private HashMap<UUID, Boolean> votes;
     private HashMap<UUID, Player> callbacks;
