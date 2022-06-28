@@ -24,12 +24,12 @@ import java.util.UUID;
 
 public class SleepListener implements Listener {
 
-    private ArrayList<UUID> voteList;
+    private HashMap<UUID, Boolean> votes;
     private HashMap<UUID, Player> callbacks;
     private VoteSleep plugin;
 
     public SleepListener(VoteSleep plugin) {
-        this.voteList = new ArrayList<>();
+        this.votes = new HashMap<>();
         callbacks = new HashMap<>();
         this.plugin = plugin;
     }
@@ -38,17 +38,17 @@ public class SleepListener implements Listener {
     @EventHandler
     public void onPlayerBedEnter(PlayerBedEnterEvent e) {
         if (e.getBedEnterResult().equals(PlayerBedEnterEvent.BedEnterResult.OK)) {
-            vote(e.getPlayer());
+            vote(e.getPlayer(), true);
         }
     }
 
     // When a player has left a bed
     @EventHandler
     public void onPlayerBedLeave(PlayerBedLeaveEvent e) {
-        if (voteList.contains(e.getPlayer().getUniqueId())) {
+        if (votes.containsKey(e.getPlayer().getUniqueId())) {
             if (isDay()) {
                 // reset vote list
-                voteList = new ArrayList<>();
+                votes = new HashMap<>();
                 Bukkit.broadcastMessage(ChatColor.GOLD + "Rise and shine!");
             } else {
                 unVote(e.getPlayer());
@@ -66,11 +66,15 @@ public class SleepListener implements Listener {
                 UUID id = UUID.fromString(args[1]);
                 if (id.toString().split("-").length == 5) {
                     callbacks.remove(id);
-                    if (!isDay() || Bukkit.getWorld(Objects.requireNonNull(plugin.getConfig().getString("Settings.world-name"))).isThundering()) {
-                        if (voteList.contains(e.getPlayer().getUniqueId())) {
+
+                    if (inBed(e.getPlayer())) {
+                        e.getPlayer().sendMessage(ChatColor.RED + "You cannot do that!");
+
+                    } else if ((!isDay() || Bukkit.getWorld(Objects.requireNonNull(plugin.getConfig().getString("Settings.world-name"))).isThundering())) {
+                        if (votes.containsKey(e.getPlayer().getUniqueId())) {
                             unVote(e.getPlayer());
                         } else {
-                            vote(e.getPlayer());
+                            vote(e.getPlayer(), false);
                         }
                     } else if (!Bukkit.getWorld(Objects.requireNonNull(plugin.getConfig().getString("Settings.world-name"))).getPlayers().contains(e.getPlayer())) {
                         e.getPlayer().sendMessage(ChatColor.RED + "You must be in the overworld to vote!");
@@ -80,6 +84,15 @@ public class SleepListener implements Listener {
                 }
             }
         }
+
+    }
+
+    private boolean inBed(Player player) {
+        if (votes.containsKey(player.getUniqueId())) {
+            return votes.get(player.getUniqueId());
+        }
+
+        return false;
     }
 
     private boolean isDay() {
@@ -87,8 +100,8 @@ public class SleepListener implements Listener {
         return (time > 0 && time < 12300);
     }
 
-    private void vote(Player player) {
-        voteList.add(player.getUniqueId());
+    private void vote(Player player, boolean isInBed) {
+        votes.put(player.getUniqueId(), isInBed);
 
         int requiredPercent = plugin.getConfig().getInt("Settings.percent");
         broadcastVoteMessage(player, getVotePercent());
@@ -101,17 +114,17 @@ public class SleepListener implements Listener {
             Bukkit.broadcastMessage(ChatColor.GOLD + "Skipping the night!");
 
             // reset list
-            voteList = new ArrayList<>();
+            votes = new HashMap<>();
         }
     }
 
     private void unVote(Player player) {
-        voteList.remove(player.getUniqueId());
+        votes.remove(player.getUniqueId());
         broadcastUnVoteMessage(player, getVotePercent());
     }
 
     private int getVotePercent() {
-        return (int) ((double) voteList.size() / (double) (Bukkit.getOnlinePlayers().size() - getExclusionCount()) * 100.0);
+        return (int) ((double) votes.size() / (double) (Bukkit.getOnlinePlayers().size() - getExclusionCount()) * 100.0);
     }
 
     private int getExclusionCount() {
@@ -143,7 +156,7 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " wants to sleep. " +
-                voteList.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
+                votes.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }
@@ -152,7 +165,7 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " no longer wants to sleep. " +
-                voteList.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
+                votes.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }

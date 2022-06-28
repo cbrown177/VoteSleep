@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class VoteSleep extends JavaPlugin {
 
-    public static float VERSION = 1.0f;
+    public static String VERSION = "1.0.1";
 
     @Override
     public void onEnable() {
