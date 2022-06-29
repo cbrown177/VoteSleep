@@ -169,7 +169,7 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " wants to sleep. " +
-                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * getRequiredPlayers()) +
+                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * getRequiredPlayers(Bukkit.getOnlinePlayers().size(), getExclusionCount())) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }
@@ -178,16 +178,14 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " no longer wants to sleep. " +
-                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * getRequiredPlayers()) +
+                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * getRequiredPlayers(Bukkit.getOnlinePlayers().size(), getExclusionCount())) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }
 
-    private int getRequiredPlayers() {
-        double onlinePlayers = 9;
-        double excludedPlayers = 0;
+    private int getRequiredPlayers(int onlinePlayers, int excludedPlayers) {
 
-        double requiredPlayers = onlinePlayers - excludedPlayers;
+        double requiredPlayers = (double)onlinePlayers - (double)excludedPlayers;
         if (onlinePlayers % excludedPlayers != 0) {
             requiredPlayers++;
         }
