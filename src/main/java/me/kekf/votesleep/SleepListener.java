@@ -169,7 +169,7 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " wants to sleep. " +
-                votes.size() + "/" + (Bukkit.getOnlinePlayers().size() - getExclusionCount()) +
+                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * getRequiredPlayers()) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
     }
@@ -178,9 +178,21 @@ public class SleepListener implements Listener {
         // create a clickable message to send to all players
         TextComponent component = new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Settings.prefix") + player.getName() +
                 " no longer wants to sleep. " +
-                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * (Bukkit.getOnlinePlayers().size() - getExclusionCount())) +
+                votes.size() + "/" + (int)((plugin.getConfig().getDouble("Settings.percent") / 100.0) * getRequiredPlayers()) +
                 " (" + percent + "%)"));
         createClickEvent(component, player);
+    }
+
+    private int getRequiredPlayers() {
+        double onlinePlayers = 9;
+        double excludedPlayers = 0;
+
+        double requiredPlayers = onlinePlayers - excludedPlayers;
+        if (onlinePlayers % excludedPlayers != 0) {
+            requiredPlayers++;
+        }
+
+        return (int)requiredPlayers;
     }
 
     private void createClickEvent(TextComponent component, Player player) {
